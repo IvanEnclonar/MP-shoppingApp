@@ -1,96 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-
-struct Date
-{
-    int month;
-    int day;
-    int year;
-};
-
-struct UserInfo
-{
-    int userID;
-    char password[11];
-    char address[31];
-    int contactNumber;
-    char name[21];
-};
-
-struct Item
-{
-    int productID;
-    char itemName[21];
-    char category[16];
-    char itemDescription[31];
-    int quantityAvailable;
-    float unitPrice;
-    int sellerID;
-};
-
-struct Transaction
-{
-    struct Date date;
-    struct Item items[5];
-    int buyerID;
-    int sellerID;
-    float totalAmount;
-};
-
-int scanUsers(struct UserInfo users[], int numUsers, int userID)
-{
-    for (int i = 0; i < numUsers; i++)
-    {
-        if (userID == users[i].userID)
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-int getUniqueUserID(struct UserInfo users[], int numUsers)
-{
-    int userID = 0, isUnique = 0;
-    do
-    {
-        printf("Enter your userID (must be unique): ");
-        scanf("%d", &userID);
-
-        if (scanUsers(users, numUsers, userID))
-        {
-            isUnique = 1;
-        }
-        else
-        {
-            printf("User ID already exists!\n");
-        }
-    } while (isUnique == 0);
-
-    return userID;
-}
-
-struct UserInfo registerUser(int userID)
-{
-    struct UserInfo newUser;
-    newUser.userID = userID;
-
-    printf("Enter your password (up to 10 characters): ");
-    scanf("%s", newUser.password);
-
-    printf("Enter your address (up to 30 characters): ");
-    scanf(" %[^\n]", newUser.address);
-
-    printf("Enter your contact number: ");
-    scanf("%d", &newUser.contactNumber);
-
-    printf("Enter your name (up to 20 characters): ");
-    scanf("%s", newUser.name);
-
-    return newUser;
-
-    printf("User registered successfully.\n");
-}
+#include "sellMenu.c"
 
 int login(struct UserInfo users[], int numUsers)
 {
@@ -121,31 +29,9 @@ void printMenu()
 
 void printUserMenu()
 {
-    prinf("\n[1] Sell Menu\n");
-    prinf("[2] Buy Menu\n");
+    printf("\n[1] Sell Menu\n");
+    printf("[2] Buy Menu\n");
     printf("[3] Exit User Menu\n");
-}
-
-struct Item addNewItem()
-{
-    struct Item newItem;
-
-    printf("Enter product ID: ");
-    scanf("%d", &newItem.productID);
-    printf("Enter item name: ");
-    scanf("%s", newItem.itemName);
-    printf("Enter category: ");
-    scanf("%s", newItem.category);
-    printf("Enter item description: ");
-    scanf("%s", newItem.itemDescription);
-    printf("Enter quantity available: ");
-    scanf("%d", &newItem.quantityAvailable);
-    printf("Enter unit price: ");
-    scanf("%f", &newItem.unitPrice);
-    printf("Enter seller ID: ");
-    scanf("%d", &newItem.sellerID);
-
-    return newItem;
 }
 
 int main()
