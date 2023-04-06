@@ -122,7 +122,7 @@ void editStock(struct Item items[], int numItems, int sellerID, int productID)
                 {
                 case 1:
                     int amt = 0;
-                    printf("Enter quantity to replenish: ");
+                    printf("Enter quantity to add: ");
                     scanf("%d", &amt);
                     items[i].quantityAvailable = amt + items[i].quantityAvailable;
                     printf("Quantity replenished successfully!\n");
@@ -161,5 +161,44 @@ void editStock(struct Item items[], int numItems, int sellerID, int productID)
     if (found == 0)
     {
         printf("Product ID not found!\n");
+    }
+}
+
+void showLowStocks(struct Item items[], int numItems, int sellerID, int myProductCount)
+{
+    int quit = 0, count = 0;
+    for (int i = 0; i < numItems; i++)
+    {
+        if (items[i].quantityAvailable < 5 && items[i].sellerID == sellerID)
+        {
+            count++;
+            printf("\nProduct ID: %d\n", items[i].productID);
+            printf("Item Name: %s\n", items[i].itemName);
+            printf("Category: %s\n", items[i].category);
+            printf("Quantity Available: %d\n", items[i].quantityAvailable);
+            printf("Unit Price: %.2f\n", items[i].unitPrice);
+
+            char input;
+            do
+            {
+                printf("Press N to see the next product or X to exit: ");
+                scanf(" %c", &input);
+            } while ((input != 'N' && input != 'n') && (input != 'x' && input != 'X'));
+
+            if (input == 'X' || input == 'x')
+            {
+                printf("Exiting low stock menu...\n");
+                quit = 1;
+            }
+        }
+
+        if ((quit == 0 && count > 0) && i == numItems - 1)
+        {
+            i = -1;
+        }
+    }
+    if (count == 0)
+    {
+        printf("No low stock items!\n");
     }
 }

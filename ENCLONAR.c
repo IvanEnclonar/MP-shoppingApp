@@ -73,6 +73,11 @@ void SellMenu(int userID, struct Item items[], int *itemCount)
         case 3:
             showMyProducts(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID));
             break;
+        case 4:
+            showLowStocks(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID));
+            break;
+        case 5:
+            break;
         default:
             printf("Invalid choice!\n");
             break;
@@ -103,17 +108,24 @@ int main()
             {
                 int userMenuChoice = 0;
                 printf("Logged in successfully.\n");
-                printUserMenu();
-                scanf(" %d", &userMenuChoice);
-                switch (userMenuChoice)
+                do
                 {
-                case 1:
-                    SellMenu(userID, items, &itemCount);
-                    break;
-                default:
-                    printf("Invalid choice!\n");
-                    break;
-                }
+                    printUserMenu();
+                    scanf(" %d", &userMenuChoice);
+                    switch (userMenuChoice)
+                    {
+                    case 1:
+                        SellMenu(userID, items, &itemCount);
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        printf("Invalid choice!\n");
+                        break;
+                    }
+                } while (userMenuChoice != 3);
             }
             break;
         case 0:
