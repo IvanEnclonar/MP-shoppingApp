@@ -1,4 +1,4 @@
-#include "buyMenu.c"
+#include "adminMenu.c"
 
 int login(struct UserInfo users[], int numUsers)
 {
@@ -49,13 +49,13 @@ void SellMenu(int userID, struct Item items[], int *itemCount)
             }
         case 2:
             int productEditID = 0;
-            showMyProducts(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID));
+            showMyProducts(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID), 0);
             printf("Enter the product ID of the item you want to edit: ");
             scanf(" %d", &productEditID);
             editStock(items, *itemCount, userID, productEditID);
             break;
         case 3:
-            showMyProducts(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID));
+            showMyProducts(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID), 0);
             break;
         case 4:
             showLowStocks(items, *itemCount, userID, sellerProductCount(items, *itemCount, userID));
@@ -67,84 +67,6 @@ void SellMenu(int userID, struct Item items[], int *itemCount)
             break;
         }
     }
-}
-
-int saveItems(struct Item items[], int itemCount)
-{
-    FILE *fp;
-    fp = fopen("Items.txt", "w");
-
-    if (fp == NULL)
-    {
-        printf("Error opening file!\n");
-        return 0;
-    }
-
-    for (int i = 0; i < itemCount; i++)
-    {
-        fprintf(fp, "%d %d\n%s\n%s\n%s\n%d %.2f\n\n", items[i].productID, items[i].sellerID, items[i].itemName, items[i].category, items[i].itemDescription, items[i].quantityAvailable, items[i].unitPrice);
-    }
-    fclose(fp);
-    printf("Items saved successfully!\n");
-    return 1;
-}
-
-int loadItems(struct Item items[], int *itemCount)
-{
-    FILE *fp;
-    fp = fopen("Items.txt", "r");
-
-    if (fp == NULL)
-    {
-        printf("No Items.txt file found!\n");
-        return 0;
-    }
-
-    while (fscanf(fp, "%d %d\n%[^\n]\n%[^\n]\n%[^\n]\n%d %f\n\n", &items[*itemCount].productID, &items[*itemCount].sellerID, items[*itemCount].itemName, items[*itemCount].category, items[*itemCount].itemDescription, &items[*itemCount].quantityAvailable, &items[*itemCount].unitPrice) != EOF)
-    {
-        *itemCount = *itemCount + 1;
-    }
-    fclose(fp);
-    return 1;
-}
-
-int saveUsers(struct UserInfo users[], int numUsers)
-{
-    FILE *fp;
-    fp = fopen("Users.txt", "w");
-
-    if (fp == NULL)
-    {
-        printf("Error opening file!\n");
-        return 0;
-    }
-
-    for (int i = 0; i < numUsers; i++)
-    {
-        fprintf(fp, "%d %s\n%s\n%s\n%d\n\n", users[i].userID, users[i].password, users[i].name, users[i].address, users[i].contactNumber);
-    }
-    fclose(fp);
-    printf("Users saved successfully!\n");
-    return 1;
-}
-
-int loadUsers(struct UserInfo users[], int *numUsers)
-{
-    FILE *fp;
-    fp = fopen("Users.txt", "r");
-
-    if (fp == NULL)
-    {
-        printf("No Users.txt file found!\n");
-        return 0;
-    }
-
-    while (fscanf(fp, "%d %s\n%[^\n]\n%[^\n]\n%d\n\n", &users[*numUsers].userID, users[*numUsers].password, users[*numUsers].name, users[*numUsers].address, &users[*numUsers].contactNumber) != EOF)
-    {
-        *numUsers = *numUsers + 1;
-    }
-    fclose(fp);
-    return 1;
 }
 
 int main()
@@ -162,6 +84,7 @@ int main()
     {
         printf("\n[1] Register User\n");
         printf("[2] Main Menu\n");
+        printf("[3] Admin Menu\n");
         printf("[0] Exit\n");
         printf("Enter choice: ");
         scanf(" %d", &choice);
@@ -175,8 +98,14 @@ int main()
             int userID = login(users, userCount);
             if (userID)
             {
+                struct Item cart[21];
+                int cartCount = 0;
                 int userMenuChoice = 0;
                 printf("Logged in successfully.\n");
+                if (loadCartData(cart, &cartCount, userID) == 1)
+                {
+                    printf("\nCart data loaded successfully!\n");
+                }
                 do
                 {
                     printf("\n[1] Sell Menu\n");
@@ -190,9 +119,13 @@ int main()
                         SellMenu(userID, items, &itemCount);
                         break;
                     case 2:
-                        BuyMenu(userID, items, &itemCount);
+                        BuyMenu(userID, items, &itemCount, users, userCount, cart, &cartCount);
                         break;
                     case 3:
+                        if (cartCount > 0)
+                        {
+                            exitUserMenu(cart, &cartCount, userID);
+                        }
                         break;
                     default:
                         printf("Invalid choice!\n");
@@ -201,9 +134,14 @@ int main()
                 } while (userMenuChoice != 3);
             }
             break;
+        case 3:
+            adminMenu(users, &userCount, items, &itemCount);
+            break;
         case 0:
-            saveUsers(users, userCount);
-            saveItems(items, itemCount);
+            if (saveUsers(users, userCount) && saveItems(items, itemCount))
+            {
+                printf("Data saved successfully!\n");
+            }
             break;
         default:
             printf("Invalid choice!\n");

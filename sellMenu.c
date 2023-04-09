@@ -73,7 +73,7 @@ void sortItems(struct Item items[], int numItems)
     }
 }
 
-void showMyProducts(struct Item items[], int numItems, int sellerID, int myProductCount)
+void showMyProducts(struct Item items[], int numItems, int sellerID, int myProductCount, int isCheckout)
 {
     int count = 0;
     struct Item myProducts[myProductCount];
@@ -87,10 +87,24 @@ void showMyProducts(struct Item items[], int numItems, int sellerID, int myProdu
     }
     sortItems(myProducts, myProductCount);
 
-    printf("\nProduct ID\tItem Name\tCategory\tQuantity Available\tUnit Price\n");
-    for (int i = 0; i < myProductCount; i++)
+    if (isCheckout == 0)
     {
-        printf("%10d\t%s\t\t%s\t\t%18d\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].category, myProducts[i].quantityAvailable, myProducts[i].unitPrice);
+        printf("\nProduct ID\tItem Name\tCategory\tQuantity Available\tUnit Price\n");
+        for (int i = 0; i < myProductCount; i++)
+        {
+            printf("%10d\t%s\t\t%s\t\t%18d\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].category, myProducts[i].quantityAvailable, myProducts[i].unitPrice);
+        }
+    }
+    else
+    {
+        float total = 0;
+        printf("\nProduct ID\tItem Name\tQuantity Available\tUnit Price\tTotal Price\n");
+        for (int i = 0; i < myProductCount; i++)
+        {
+            total += myProducts[i].quantityAvailable * myProducts[i].unitPrice;
+            printf("%10d\t%s\t%18d\t%10.2f\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].quantityAvailable, myProducts[i].unitPrice, myProducts[i].quantityAvailable * myProducts[i].unitPrice);
+        }
+        printf("Total: %.2f\n", total);
     }
 }
 

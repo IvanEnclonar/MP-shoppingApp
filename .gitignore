@@ -1,5 +1,4 @@
 a.exe
 test.c
 test2.c
-Users.txt
-Items.txt
+*.txt
