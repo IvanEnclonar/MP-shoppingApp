@@ -1,9 +1,14 @@
 #include "register.c"
 
+/**
+@brief Checks if a given product ID is unique among the existing items.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+@return An integer representing a unique product ID.
+*/
 int uniqueProductID(struct Item items[], int numItems)
 {
     int productID = 0, isUnique = 1;
-
     do
     {
         isUnique = 1;
@@ -23,6 +28,13 @@ int uniqueProductID(struct Item items[], int numItems)
     return productID;
 }
 
+/**
+@brief Calculates the number of products a seller has in the inventory.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+@param sellerID An integer representing the seller's ID.
+@return An integer representing the number of products a seller has in the inventory.
+*/
 int sellerProductCount(struct Item items[], int numItems, int sellerID)
 {
     int count = 0;
@@ -35,17 +47,24 @@ int sellerProductCount(struct Item items[], int numItems, int sellerID)
     }
     return count;
 }
+
+/**
+@brief Creates a new item and adds it to the inventory.
+@param sellerID An integer representing the seller's ID.
+@param productID An integer representing the product's ID.
+@return A struct Item representing the new item added to the inventory.
+*/
 struct Item addNewItem(int sellerID, int productID)
 {
     struct Item newItem;
 
     newItem.productID = productID;
     printf("Enter item name: ");
-    scanf("%s", newItem.itemName);
+    scanf(" %[^\n]", newItem.itemName);
     printf("Enter category: ");
-    scanf("%s", newItem.category);
+    scanf(" %[^\n]", newItem.category);
     printf("Enter item description: ");
-    scanf("%s", newItem.itemDescription);
+    scanf(" %[^\n]", newItem.itemDescription);
     printf("Enter quantity available: ");
     scanf("%d", &newItem.quantityAvailable);
     printf("Enter unit price: ");
@@ -56,6 +75,11 @@ struct Item addNewItem(int sellerID, int productID)
     return newItem;
 }
 
+/**
+@brief Sorts the items in the inventory based on their product ID.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+*/
 void sortItems(struct Item items[], int numItems)
 {
     struct Item temp;
@@ -73,6 +97,14 @@ void sortItems(struct Item items[], int numItems)
     }
 }
 
+/**
+@brief Displays the products of a seller.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+@param sellerID An integer representing the seller's ID.
+@param myProductCount An integer representing the number of products a seller has in the inventory.
+@param isCheckout An integer flag that determines if the function is called during a checkout process (1 for true, 0 for false).
+*/
 void showMyProducts(struct Item items[], int numItems, int sellerID, int myProductCount, int isCheckout)
 {
     int count = 0;
@@ -89,25 +121,28 @@ void showMyProducts(struct Item items[], int numItems, int sellerID, int myProdu
 
     if (isCheckout == 0)
     {
-        printf("\nProduct ID\tItem Name\tCategory\tQuantity Available\tUnit Price\n");
+        printf("\nProduct ID\tItem Name\t\tCategory\tQuantity Available\tUnit Price\n\n");
         for (int i = 0; i < myProductCount; i++)
         {
-            printf("%10d\t%s\t\t%s\t\t%18d\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].category, myProducts[i].quantityAvailable, myProducts[i].unitPrice);
+            printf("%10d\t%-20s\t%-15s\t\t%10d\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].category, myProducts[i].quantityAvailable, myProducts[i].unitPrice);
         }
     }
     else
     {
         float total = 0;
-        printf("\nProduct ID\tItem Name\tQuantity Available\tUnit Price\tTotal Price\n");
+        printf("\nProduct ID\tItem Name\t\tQuantity\tUnit Price\tTotal Price\n");
         for (int i = 0; i < myProductCount; i++)
         {
             total += myProducts[i].quantityAvailable * myProducts[i].unitPrice;
-            printf("%10d\t%s\t%18d\t%10.2f\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].quantityAvailable, myProducts[i].unitPrice, myProducts[i].quantityAvailable * myProducts[i].unitPrice);
+            printf("%10d\t%-20s\t%8d\t%10.2f\t%10.2f\n", myProducts[i].productID, myProducts[i].itemName, myProducts[i].quantityAvailable, myProducts[i].unitPrice, myProducts[i].quantityAvailable * myProducts[i].unitPrice);
         }
         printf("Total: %.2f\n", total);
     }
 }
 
+/**
+@brief Prints the edit menu options for the user.
+*/
 void printEditMenu()
 {
     printf("[1] Replenish\n");
@@ -118,6 +153,13 @@ void printEditMenu()
     printf("[6] Finish editing\n");
 }
 
+/**
+@brief Allows a seller to edit the details of a product in the inventory.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+@param sellerID An integer representing the seller's ID.
+@param productID An integer representing the product's ID.
+*/
 void editStock(struct Item items[], int numItems, int sellerID, int productID)
 {
     int i, found = 0;
@@ -148,17 +190,17 @@ void editStock(struct Item items[], int numItems, int sellerID, int productID)
                     break;
                 case 3:
                     printf("Enter new item name: ");
-                    scanf("%s", items[i].itemName);
+                    scanf(" %[^\n]", items[i].itemName);
                     printf("Item name changed successfully!\n");
                     break;
                 case 4:
                     printf("Enter new item category: ");
-                    scanf("%s", items[i].category);
+                    scanf(" %[^\n]", items[i].category);
                     printf("Item category changed successfully!\n");
                     break;
                 case 5:
                     printf("Enter new item description: ");
-                    scanf("%s", items[i].itemDescription);
+                    scanf(" %[^\n]", items[i].itemDescription);
                     printf("Item description changed successfully!\n");
                     break;
                 case 6:
@@ -178,6 +220,13 @@ void editStock(struct Item items[], int numItems, int sellerID, int productID)
     }
 }
 
+/**
+@brief Displays the products with low stock (less than 5) for a seller.
+@param items[] An array of Item structures representing the inventory.
+@param numItems An integer representing the number of items in the inventory.
+@param sellerID An integer representing the seller's ID.
+@param myProductCount An integer representing the number of products a seller has in the inventory.
+*/
 void showLowStocks(struct Item items[], int numItems, int sellerID, int myProductCount)
 {
     int quit = 0, count = 0;
@@ -189,6 +238,7 @@ void showLowStocks(struct Item items[], int numItems, int sellerID, int myProduc
             printf("\nProduct ID: %d\n", items[i].productID);
             printf("Item Name: %s\n", items[i].itemName);
             printf("Category: %s\n", items[i].category);
+            printf("Item Description: %s\n", items[i].itemDescription);
             printf("Quantity Available: %d\n", items[i].quantityAvailable);
             printf("Unit Price: %.2f\n", items[i].unitPrice);
 

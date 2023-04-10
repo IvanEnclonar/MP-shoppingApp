@@ -1,5 +1,11 @@
 #include "adminMenu.c"
 
+/**
+ * @brief Allows users to log in with their user ID and password.
+ * @param users Array of UserInfo structures.
+ * @param numUsers Number of users in the array.
+ * @return Returns the user ID if the login is successful, or 0 if unsuccessful.
+ */
 int login(struct UserInfo users[], int numUsers)
 {
     int userID;
@@ -7,7 +13,7 @@ int login(struct UserInfo users[], int numUsers)
     printf("Enter your userID: ");
     scanf("%d", &userID);
     printf("Enter your password: ");
-    scanf("%s", &password);
+    scanf(" %[^\n]", password);
 
     for (int i = 0; i < numUsers; i++)
     {
@@ -20,6 +26,12 @@ int login(struct UserInfo users[], int numUsers)
     return 0;
 }
 
+/**
+ * @brief Displays the sell menu, allowing sellers to manage their items.
+ * @param userID Unique user ID of the seller.
+ * @param items Array of Item structures.
+ * @param itemCount Pointer to an integer to store the number of items.
+ */
 void SellMenu(int userID, struct Item items[], int *itemCount)
 {
     int choice = 0;
@@ -69,6 +81,10 @@ void SellMenu(int userID, struct Item items[], int *itemCount)
     }
 }
 
+/**
+ * @brief Main function that drives the program, allowing users to register, log in, and access user and admin menus. Compiles all the
+ * function that I mention above together
+ */
 int main()
 {
     int choice = 1;
@@ -122,10 +138,7 @@ int main()
                         BuyMenu(userID, items, &itemCount, users, userCount, cart, &cartCount);
                         break;
                     case 3:
-                        if (cartCount > 0)
-                        {
-                            saveCart(cart, &cartCount, userID);
-                        }
+                        saveCart(cart, &cartCount, userID);
                         break;
                     default:
                         printf("Invalid choice!\n");

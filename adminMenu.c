@@ -1,31 +1,49 @@
 #include "buyMenu.c"
 
+/**
+@brief Displays all users in a tabular format.
+@param users Array of UserInfo structures.
+@param numUsers Number of users in the array.
+*/
 void showAllUsers(struct UserInfo users[], int numUsers)
 {
-    // TODO: Update output formatting
-    printf("User ID\tPassword\tName\tAddress\tContact Number\n");
+    printf("\nUser ID\t\tPassword\t\tName\t\t\tAddress\t\t\t\tContact Number\n\n");
     for (int i = 0; i < numUsers; i++)
     {
-        printf("%d\t%s\t\t%s\t%s\t%d\n", users[i].userID, users[i].password, users[i].name, users[i].address, users[i].contactNumber);
+        printf("%d\t\t%-10s\t\t%-20s\t%-30s\t%d\n", users[i].userID, users[i].password, users[i].name, users[i].address, users[i].contactNumber);
     }
 }
 
+/**
+@brief Displays all sellers and their respective items for sale in a tabular format.
+@param users Array of UserInfo structures.
+@param numUsers Number of users in the array.
+@param uniqueSellers Array of unique seller IDs.
+@param numUniqueSellers Number of unique sellers in the array.
+@param items Array of Item structures.
+@param numItems Number of items in the array.
+*/
 void showAllSellers(struct UserInfo users[], int numUsers, int uniqueSellers[], int numUniqueSellers, struct Item items[], int numItems)
 {
-    // TODO: Update output formatting
-    printf("User ID\tPassword\tName\tAddress\tContact Num\tItems for sale\n");
+    printf("\nUser ID\t\tPassword\t\tName\t\t\tAddress\t\t\t\tContact Number\t\tItems for Sale\n\n");
     for (int i = 0; i < numUsers; i++)
     {
         for (int j = 0; j < numUniqueSellers; j++)
         {
             if (users[i].userID == uniqueSellers[j])
             {
-                printf("%d\t%s\t\t%s\t%s\t%d\t\t%d\n", users[i].userID, users[i].password, users[i].name, users[i].address, users[i].contactNumber, sellerProductCount(items, numItems, users[i].userID));
+                printf("%d\t\t%-10s\t\t%-20s\t%-30s\t%d\t\t\t%d\n", users[i].userID, users[i].password, users[i].name, users[i].address, users[i].contactNumber, sellerProductCount(items, numItems, users[i].userID));
             }
         }
     }
 }
 
+/**
+@brief Compares two Date structures and returns the result.
+@param date1 First date to compare.
+@param date2 Second date to compare.
+@return Returns -1 if date1 is earlier than date2, 1 if date1 is later than date2, and 0 if both dates are the same.
+*/
 int compare_dates(struct Date date1, struct Date date2)
 {
     if (date1.year < date2.year)
@@ -58,6 +76,13 @@ int compare_dates(struct Date date1, struct Date date2)
     }
 }
 
+/**
+@brief Finds and returns the unique buyers from an array of Transaction structures.
+@param items Array of Transaction structures.
+@param itemCount Number of transactions in the array.
+@param uniqueSellers Array to store the unique buyer IDs.
+@return Returns the number of unique buyers.
+*/
 int getUniqueBuyers(struct Transaction items[], int itemCount, int uniqueSellers[])
 {
     int count = 0;
@@ -82,6 +107,13 @@ int getUniqueBuyers(struct Transaction items[], int itemCount, int uniqueSellers
     return count;
 }
 
+/**
+@brief Finds and returns the unique sellers from an array of Transaction structures.
+@param items Array of Transaction structures.
+@param itemCount Number of transactions in the array.
+@param uniqueSellers Array to store the unique seller IDs.
+@return Returns the number of unique sellers.
+*/
 int getUniqueSellersT(struct Transaction items[], int itemCount, int uniqueSellers[])
 {
     int count = 0;
@@ -106,10 +138,16 @@ int getUniqueSellersT(struct Transaction items[], int itemCount, int uniqueSelle
     return count;
 }
 
+/**
+@brief Retrieves transactions within a specified duration.
+@param transactions Array of Transaction structures.
+@param numTransactions Number of transactions in the array.
+@param temp Array to store the transactions within the specified duration.
+@return Returns the number of transactions within the specified duration, or -1 if an invalid date range is provided.
+*/
 int getTransactionInDuration(struct Transaction transactions[], int numTransactions, struct Transaction temp[])
 {
     struct Date startDate, endDate;
-    int found = 0;
     printf("Enter start date (dd/mm/yyyy): ");
     scanf("%d/%d/%d", &startDate.day, &startDate.month, &startDate.year);
     printf("Enter end date (dd/mm/yyyy): ");
@@ -142,6 +180,13 @@ int getTransactionInDuration(struct Transaction transactions[], int numTransacti
     }
 }
 
+/**
+@brief Displays the total purchases made by each unique buyer during a specified duration.
+@param transactions Array of Transaction structures.
+@param numTransactions Number of transactions in the array.
+@param users Array of UserInfo structures.
+@param numUsers Number of users in the array.
+*/
 void showShopaholics(struct Transaction transactions[], int numTransactions, struct UserInfo users[], int numUsers)
 {
     struct Transaction newTransactions[50];
@@ -163,14 +208,14 @@ void showShopaholics(struct Transaction transactions[], int numTransactions, str
             }
         }
 
-        printf("Buyer ID\tName\t\tTotal Purchases\n");
+        printf("\nBuyer ID\tName\t\t\tTotal Purchases\n\n");
         for (int i = 0; i < numUniqueBuyers; i++)
         {
             for (int j = 0; j < numUsers; j++)
             {
                 if (uniqueBuyers[i] == users[j].userID)
                 {
-                    printf("%d\t\t%s\t\t%.2f\n", users[j].userID, users[j].name, tottalSales[i]);
+                    printf("%-10d\t%-20s\t%.2f\n", users[j].userID, users[j].name, tottalSales[i]);
                 }
             }
         }
@@ -180,9 +225,16 @@ void showShopaholics(struct Transaction transactions[], int numTransactions, str
         printf("No transactions found in the given duration!\n");
     }
 }
+
+/**
+@brief Displays the total sales made by each unique seller during a specified duration.
+@param transactions Array of Transaction structures.
+@param numTransactions Number of transactions in the array.
+@param users Array of UserInfo structures.
+@param numUsers Number of users in the array.
+*/
 void showSellerSales(struct Transaction transactions[], int numTransactions, struct UserInfo users[], int numUsers)
 {
-    // TODO: GET Seller Name
     struct Transaction newTransactions[50];
     int counter = getTransactionInDuration(transactions, numTransactions, newTransactions);
     if (counter > 0)
@@ -202,14 +254,14 @@ void showSellerSales(struct Transaction transactions[], int numTransactions, str
             }
         }
 
-        printf("Seller ID\tTotal Sales\n");
+        printf("\nSeller ID\tName\t\t\tTotal Sales\n\n");
         for (int i = 0; i < numUniqueSellers; i++)
         {
             for (int j = 0; j < numUsers; j++)
             {
                 if (uniqueSellers[i] == users[j].userID)
                 {
-                    printf("%d\t\t%s\t\t%.2f\n", users[j].userID, users[j].name, tottalSales[i]);
+                    printf("%-10d\t%-20s\t%.2f\n", users[j].userID, users[j].name, tottalSales[i]);
                 }
             }
         }
@@ -220,6 +272,11 @@ void showSellerSales(struct Transaction transactions[], int numTransactions, str
     }
 }
 
+/**
+ * @brief Displays sales transactions within the specified date range.
+ * @param transactions Array of Transaction structures.
+ * @param numTransactions Number of transactions in the array.
+ */
 void showSalesInDuration(struct Transaction transactions[], int numTransactions)
 {
     struct Date startDate, endDate;
@@ -247,10 +304,10 @@ void showSalesInDuration(struct Transaction transactions[], int numTransactions)
             {
                 if (found == 0)
                 {
-                    printf("\nProduct ID\tItem Name\tQuantity Available\tUnit Price\tTotal Price\n");
+                    printf("\nProduct ID\tItem Name\t\tQuantity Available\tUnit Price\t\tTotal Price\n\n");
                 }
                 tottalSales += (transactions[i].quantityBought * transactions[i].unitPrice);
-                printf("%10d\t%s\t%18d\t%10.2f\t%10.2f\n", transactions[i].productID, transactions[i].itemName, transactions[i].quantityBought, transactions[i].unitPrice, transactions[i].quantityBought * transactions[i].unitPrice);
+                printf("%-10d\t%-20s\t%-10d\t\t%-10.2f\t\t%-10.2f\n", transactions[i].productID, transactions[i].itemName, transactions[i].quantityBought, transactions[i].unitPrice, transactions[i].quantityBought * transactions[i].unitPrice);
                 found = 1;
             }
         }
@@ -260,16 +317,25 @@ void showSalesInDuration(struct Transaction transactions[], int numTransactions)
         }
         else
         {
-            printf("\nTotal sales for that duration: %.2f\n", tottalSales);
+            printf("\t\nTotal sales for that duration: %.2f\n", tottalSales);
         }
     }
 }
 
+/**
+ * @brief Displays the admin menu, allowing administrators to manage users, items, and transactions.
+ * @param users Array of UserInfo structures.
+ * @param userCount Pointer to an integer to store the number of users.
+ * @param items Array of Item structures.
+ * @param itemCount Pointer to an integer to store the number of items.
+ */
 void adminMenu(struct UserInfo users[], int *userCount, struct Item items[], int *itemCount)
 {
     char input[20];
     printf("Enter password: ");
-    scanf("%s", input);
+    fflush(stdin);
+    fgets(input, 20, stdin);
+    input[strlen(input) - 1] = '\0'; // remove newline character from input string
 
     if (strcmp("H3LLo?", input) == 0)
     {

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+// Structure used to tract the date
 struct Date
 {
     int month;
@@ -8,6 +9,7 @@ struct Date
     int year;
 };
 
+// Structure used to store the user information
 struct UserInfo
 {
     int userID;
@@ -17,6 +19,7 @@ struct UserInfo
     char name[21];
 };
 
+// Structure used to store the item information
 struct Item
 {
     int productID;
@@ -28,6 +31,7 @@ struct Item
     int sellerID;
 };
 
+// Structure used to store the transaction information
 struct Transaction
 {
     struct Date date;

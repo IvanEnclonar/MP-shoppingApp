@@ -1,5 +1,6 @@
 #include "sellMenu.c"
 
+// Prints the buy menu
 void printBuyMenu()
 {
     printf("\n[1] View all items\n");
@@ -13,6 +14,13 @@ void printBuyMenu()
     printf("Enter choice: ");
 }
 
+/**
+ * @brief Retrieves the unique seller IDs from a given array of items.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ * @param uniqueSellers An array to store unique seller IDs.
+ * @return The number of unique sellers found in the items array.
+ */
 int getUniqueSellers(struct Item items[], int itemCount, int uniqueSellers[])
 {
     int count = 0;
@@ -37,6 +45,11 @@ int getUniqueSellers(struct Item items[], int itemCount, int uniqueSellers[])
     return count;
 }
 
+/**
+ * @brief Displays items from an array of items grouped by unique sellers.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ */
 void viewItems(struct Item items[], int *itemCount)
 {
     int uniqueSellers[100];
@@ -68,17 +81,36 @@ void viewItems(struct Item items[], int *itemCount)
     }
 }
 
-void showProductsBySeller(struct Item items[], int itemCount)
+/**
+ * @brief Displays items from an array of items by a specific seller.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ * @param users An array of UserInfo structures.
+ * @param userCount The number of users in the array.
+ */
+void showProductsBySeller(struct Item items[], int itemCount, struct UserInfo users[], int userCount)
 {
     int sellerId;
     printf("\nEnter seller ID: ");
     scanf("%d", &sellerId);
 
-    printf("Products by this seller: \n");
-    showMyProducts(items, itemCount, sellerId, sellerProductCount(items, itemCount, sellerId), 0);
-    printf("\n");
+    if (scanUsers(users, userCount, sellerId) == 0)
+    {
+        printf("Products by this seller: \n");
+        showMyProducts(items, itemCount, sellerId, sellerProductCount(items, itemCount, sellerId), 0);
+        printf("\n");
+    }
+    else
+    {
+        printf("Seller ID not found!\n");
+    }
 }
 
+/**
+ * @brief Displays items from an array of items by a specific category.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ */
 void searchProductsByCategory(struct Item items[], int itemCount)
 {
     char input[100];
@@ -126,6 +158,11 @@ void searchProductsByCategory(struct Item items[], int itemCount)
     }
 }
 
+/**
+ * @brief Displays items from an array of items by a specific name.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ */
 void searchProductsByName(struct Item items[], int itemCount)
 {
     char input[21];
@@ -174,6 +211,14 @@ void searchProductsByName(struct Item items[], int itemCount)
     }
 }
 
+/**
+ * @brief Adds an item to the cart.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ * @param userID The ID of the user.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ */
 void addToCart(struct Item items[], int itemCount, int userID, struct Item cart[], int *cartCount)
 {
     if (*cartCount >= 10)
@@ -234,6 +279,12 @@ void addToCart(struct Item items[], int itemCount, int userID, struct Item cart[
     }
 }
 
+/**
+ * @brief Removes items from a given seller in the cart.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param sellerID The ID of the seller whose items should be removed.
+ */
 void RemoveItemsFromSeller(struct Item cart[], int *cartCount, int sellerID)
 {
     for (int i = 0; i < *cartCount; i++)
@@ -250,6 +301,12 @@ void RemoveItemsFromSeller(struct Item cart[], int *cartCount, int sellerID)
     }
 }
 
+/**
+ * @brief Removes a specific item from the cart.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param productID The ID of the product to be removed.
+ */
 void RemoveSpecificItem(struct Item cart[], int *cartCount, int productID)
 {
     for (int i = 0; i < *cartCount; i++)
@@ -266,6 +323,13 @@ void RemoveSpecificItem(struct Item cart[], int *cartCount, int productID)
     }
 }
 
+/**
+ * @brief Edits the quantity of a specific item in the cart.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param productID The ID of the product whose quantity should be edited.
+ * @param quantity The new quantity for the specified product.
+ */
 void EditQuantity(struct Item cart[], int *cartCount, int productID, int quantity)
 {
     int found = 0;
@@ -290,9 +354,18 @@ void EditQuantity(struct Item cart[], int *cartCount, int productID, int quantit
     }
 }
 
+/**
+ * @brief Checks out a specific product from the cart and updates the item quantity in the items array.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param productID The ID of the product to be checked out.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ * @param date A Date structure representing the current date.
+ * @param userID The ID of the user.
+ */
 void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct Item items[], int *itemCount, struct Date date, int userID)
 {
-    // TODO: Add payable to which user
     int totalItems = 0;
     float total = 0;
     sortItems(cart, *cartCount);
@@ -302,8 +375,8 @@ void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct
         if (cart[i].productID == productID)
         {
             if (totalItems == 0)
-                printf("\nProduct ID\tItem Name\tQuantity Available\tUnit Price\tTotal Price\n");
-            printf("%10d\t%s\t%18d\t%10.2f\t%10.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
+                printf("\nProduct ID\tItem Name\t\tQuantity\tUnit Price\tTotal Price\n");
+            printf("%10d\t%-20s\t%8d\t%10.2f\t%11.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
             total = total + (cart[i].quantityAvailable * cart[i].unitPrice);
             filerteredCart[totalItems] = cart[i];
             totalItems++;
@@ -347,9 +420,18 @@ void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct
     }
 }
 
+/**
+ * @brief Checks out all items from a specific seller in the cart and updates the item quantities in the items array.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param sellerID The ID of the seller whose items should be checked out.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ * @param date A Date structure representing the current date.
+ * @param userID The ID of the user.
+ */
 void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct Item items[], int *itemCount, struct Date date, int userID)
 {
-    // TODO: Add payable to which user
     int found = 0, totalItems = 0;
     float total = 0;
     sortItems(cart, *cartCount);
@@ -359,8 +441,8 @@ void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct I
         if (cart[i].sellerID == sellerID)
         {
             if (found == 0)
-                printf("\nProduct ID\tItem Name\tQuantity Available\tUnit Price\tTotal Price\n");
-            printf("%10d\t%s\t%18d\t%10.2f\t%10.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
+                printf("\nProduct ID\tItem Name\t\tQuantity\tUnit Price\tTotal Price\n");
+            printf("%10d\t%-20s\t%8d\t%10.2f\t%11.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
             total = total + (cart[i].quantityAvailable * cart[i].unitPrice);
             found = 1;
             filerteredCart[totalItems] = cart[i];
@@ -412,6 +494,11 @@ void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct I
     }
 }
 
+/**
+ * @brief Displays and allows user to edit the items in the cart.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ */
 void editCart(struct Item cart[], int *cartCount)
 {
     if (*cartCount == 0)
@@ -421,10 +508,10 @@ void editCart(struct Item cart[], int *cartCount)
     else
     {
         sortItems(cart, *cartCount);
-        printf("\nProduct ID\tItem Name\tCategory\tQuantity Available\tUnit Price\n");
+        printf("\nProduct ID\tItem Name\t\tCategory\tQuantity\tUnit Price\n\n");
         for (int i = 0; i < *cartCount; i++)
         {
-            printf("%10d\t%s\t\t%s\t\t%18d\t%10.2f\n", cart[i].productID, cart[i].itemName, cart[i].category, cart[i].quantityAvailable, cart[i].unitPrice);
+            printf("%10d\t%-20s\t%-15s\t%8d\t%10.2f\n", cart[i].productID, cart[i].itemName, cart[i].category, cart[i].quantityAvailable, cart[i].unitPrice);
         }
 
         int choice;
@@ -470,6 +557,17 @@ void editCart(struct Item cart[], int *cartCount)
     }
 }
 
+/**
+ * @brief Checks out all items in the cart and saves the transaction.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ * @param users An array of UserInfo structures.
+ * @param userCount The number of users in the array.
+ * @param date A Date structure representing the current date.
+ * @param userID The ID of the user.
+ */
 void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, struct Date date, int userID)
 {
     int uniqueSellers[100];
@@ -484,6 +582,7 @@ void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *i
     printf("Transaction list:\n");
     for (int i = 0; i < sellerCount; i++)
     {
+        // TODO: EDIT SHOW MY PRODUCTS
         showMyProducts(cart, *cartCount, uniqueSellers[i], sellerProductCount(cart, *cartCount, uniqueSellers[i]), 1);
         for (int j = 0; j < userCount; j++)
         {
@@ -537,6 +636,16 @@ void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *i
     }
 }
 
+/**
+ * @brief Displays the checkout menu to the user.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ * @param users An array of UserInfo structures.
+ * @param userCount The number of users in the array.
+ * @param userID The ID of the user.
+ */
 void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, int userID)
 {
     if (*cartCount == 0)
@@ -582,6 +691,16 @@ void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *
     }
 }
 
+/**
+ * @brief Displays the buy menu to the user and processes their selections.
+ * @param userID The ID of the user.
+ * @param items An array of Item structures.
+ * @param itemCount A pointer to the number of items in the array.
+ * @param users An array of UserInfo structures.
+ * @param userCount The number of users in the array.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ */
 void BuyMenu(int userID, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, struct Item cart[], int *cartCount)
 {
     int choice = 0;
@@ -596,7 +715,7 @@ void BuyMenu(int userID, struct Item items[], int *itemCount, struct UserInfo us
             viewItems(items, itemCount);
             break;
         case 2:
-            showProductsBySeller(items, *itemCount);
+            showProductsBySeller(items, *itemCount, users, userCount);
             break;
         case 3:
             searchProductsByCategory(items, *itemCount);
@@ -622,7 +741,14 @@ void BuyMenu(int userID, struct Item items[], int *itemCount, struct UserInfo us
     }
 }
 
-int saveCart(struct Item cart[], int *cartCount, int userID)
+/**
+ * @brief Saves the contents of the cart to a file.
+ * @param cart An array of Item structures representing the cart.
+ * @param cartCount A pointer to the number of items in the cart.
+ * @param userID The ID of the user.
+ * @return 1 if the save operation was successful, 0 otherwise.
+ */
+void saveCart(struct Item cart[], int *cartCount, int userID)
 {
     if (*cartCount > 0)
     {
@@ -636,7 +762,6 @@ int saveCart(struct Item cart[], int *cartCount, int userID)
         if (fp == NULL)
         {
             printf("Error opening file!\n");
-            return 0;
         }
 
         for (int i = 0; i < *cartCount; i++)
@@ -644,6 +769,15 @@ int saveCart(struct Item cart[], int *cartCount, int userID)
             fprintf(fp, "%d %d\n%s\n%s\n%s\n%d %.2f\n\n", cart[i].productID, cart[i].sellerID, cart[i].itemName, cart[i].category, cart[i].itemDescription, cart[i].quantityAvailable, cart[i].unitPrice);
         }
         fclose(fp);
-        return 1;
+    }
+    else
+    {
+        int ID = userID;
+        FILE *fp;
+        char filename[50];
+        sprintf(filename, "%d", ID);
+        strcat(filename, ".txt");
+        fp = fopen(filename, "w");
+        fclose(fp);
     }
 }
