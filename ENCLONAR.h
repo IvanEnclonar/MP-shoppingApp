@@ -31,8 +31,12 @@ struct Item
 struct Transaction
 {
     struct Date date;
-    struct Item items[5];
-    int buyerID;
+    int productID;
+    char itemName[21];
+    char category[16];
+    char itemDescription[31];
+    int quantityBought;
+    float unitPrice;
     int sellerID;
-    float totalAmount;
+    int buyerID;
 };

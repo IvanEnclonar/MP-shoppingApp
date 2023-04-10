@@ -129,7 +129,25 @@ int loadUsers(struct UserInfo users[], int *numUsers)
     return 1;
 }
 
-int saveTransaction(struct Item cart[], int cartCount, struct Date date)
+int loadTransaction(struct Transaction transaction[], int *transactionCount)
+{
+    FILE *fp;
+    fp = fopen("Transactions.txt", "r");
+
+    if (fp == NULL)
+    {
+        printf("Error opening file!\n");
+        return 0;
+    }
+    while (fscanf(fp, "%d\\%d\\%d\n%d %d %d\n%[^\n]\n%[^\n]\n%[^\n]\n%d %f\n\n", &transaction[*transactionCount].date.day, &transaction[*transactionCount].date.month, &transaction[*transactionCount].date.year, &transaction[*transactionCount].productID, &transaction[*transactionCount].sellerID, &transaction[*transactionCount].buyerID, transaction[*transactionCount].itemName, transaction[*transactionCount].category, transaction[*transactionCount].itemDescription, &transaction[*transactionCount].quantityBought, &transaction[*transactionCount].unitPrice) != EOF)
+    {
+        *transactionCount = *transactionCount + 1;
+    }
+    fclose(fp);
+    return 1;
+}
+
+int saveTransaction(struct Item cart[], int cartCount, struct Date date, int userID)
 {
     FILE *fp;
     fp = fopen("Transactions.txt", "a");
@@ -138,10 +156,10 @@ int saveTransaction(struct Item cart[], int cartCount, struct Date date)
         printf("Error opening file!\n");
         return 0;
     }
-    fprintf(fp, "%d\\%d\\%d\n\n", date.day, date.month, date.year);
     for (int i = 0; i < cartCount; i++)
     {
-        fprintf(fp, "%d %d\n%s\n%s\n%s\n%d %.2f\n\n", cart[i].productID, cart[i].sellerID, cart[i].itemName, cart[i].category, cart[i].itemDescription, cart[i].quantityAvailable, cart[i].unitPrice);
+        fprintf(fp, "%d\\%d\\%d\n", date.day, date.month, date.year);
+        fprintf(fp, "%d %d %d\n%s\n%s\n%s\n%d %.2f\n\n", cart[i].productID, cart[i].sellerID, userID, cart[i].itemName, cart[i].category, cart[i].itemDescription, cart[i].quantityAvailable, cart[i].unitPrice);
     }
     fclose(fp);
     return 1;

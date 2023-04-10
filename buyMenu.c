@@ -290,7 +290,7 @@ void EditQuantity(struct Item cart[], int *cartCount, int productID, int quantit
     }
 }
 
-void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct Item items[], int *itemCount, struct Date date)
+void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct Item items[], int *itemCount, struct Date date, int userID)
 {
     // TODO: Add payable to which user
     int totalItems = 0;
@@ -330,7 +330,7 @@ void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct
                     items[i].quantityAvailable = items[i].quantityAvailable - filerteredCart[0].quantityAvailable;
                 }
             }
-            if (saveTransaction(filerteredCart, totalItems, date) == 1)
+            if (saveTransaction(filerteredCart, totalItems, date, userID) == 1)
             {
                 // clear cart
                 RemoveSpecificItem(cart, cartCount, productID);
@@ -347,7 +347,7 @@ void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct
     }
 }
 
-void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct Item items[], int *itemCount, struct Date date)
+void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct Item items[], int *itemCount, struct Date date, int userID)
 {
     // TODO: Add payable to which user
     int found = 0, totalItems = 0;
@@ -387,7 +387,7 @@ void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct I
                     }
                 }
             }
-            if (saveTransaction(filerteredCart, totalItems, date) == 1)
+            if (saveTransaction(filerteredCart, totalItems, date, userID) == 1)
             {
                 // clear cart
                 RemoveItemsFromSeller(cart, cartCount, sellerID);
@@ -470,7 +470,7 @@ void editCart(struct Item cart[], int *cartCount)
     }
 }
 
-void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, struct Date date)
+void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, struct Date date, int userID)
 {
     int uniqueSellers[100];
     int sellerCount = getUniqueSellers(cart, *cartCount, uniqueSellers);
@@ -513,7 +513,7 @@ void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *i
                 }
             }
         }
-        if (saveTransaction(cart, *cartCount, date) == 1)
+        if (saveTransaction(cart, *cartCount, date, userID) == 1)
         {
             // clear cart
             for (int i = 0; i < *cartCount; i++)
@@ -537,7 +537,7 @@ void checkoutAll(struct Item cart[], int *cartCount, struct Item items[], int *i
     }
 }
 
-void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount)
+void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *itemCount, struct UserInfo users[], int userCount, int userID)
 {
     if (*cartCount == 0)
     {
@@ -550,38 +550,35 @@ void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *
         printf("Enter date (dd/mm/yyyy): ");
         scanf("%d/%d/%d", &date.day, &date.month, &date.year);
 
-        do
+        printf("\n[1] Checkout All Items\n");
+        printf("[2] Checkout Items by a Specific Seller\n");
+        printf("[3] Checkout a Specific Item\n");
+        printf("[4] Cancel Checkout\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+        switch (choice)
         {
-            printf("\n[1] Checkout All Items\n");
-            printf("[2] Checkout Items by a Specific Seller\n");
-            printf("[3] Checkout a Specific Item\n");
-            printf("[4] Cancel Checkout\n");
-            printf("Enter choice: ");
-            scanf("%d", &choice);
-            switch (choice)
-            {
-            case 1:
-                checkoutAll(cart, cartCount, items, itemCount, users, userCount, date);
-                break;
-            case 2:
-                printf("Enter seller ID: ");
-                int sellerID;
-                scanf("%d", &sellerID);
-                checkOutBySeller(cart, cartCount, sellerID, items, itemCount, date);
-                break;
-            case 3:
-                printf("Enter product ID: ");
-                int productID;
-                scanf("%d", &productID);
-                checkOutByProduct(cart, cartCount, productID, items, itemCount, date);
-                break;
-            case 4:
-                break;
-            default:
-                printf("Please a valid enter choice!\n");
-                break;
-            }
-        } while (choice != 4);
+        case 1:
+            checkoutAll(cart, cartCount, items, itemCount, users, userCount, date, userID);
+            break;
+        case 2:
+            printf("Enter seller ID: ");
+            int sellerID;
+            scanf("%d", &sellerID);
+            checkOutBySeller(cart, cartCount, sellerID, items, itemCount, date, userID);
+            break;
+        case 3:
+            printf("Enter product ID: ");
+            int productID;
+            scanf("%d", &productID);
+            checkOutByProduct(cart, cartCount, productID, items, itemCount, date, userID);
+            break;
+        case 4:
+            break;
+        default:
+            printf("Please a valid enter choice!\n");
+            break;
+        }
     }
 }
 
@@ -614,7 +611,7 @@ void BuyMenu(int userID, struct Item items[], int *itemCount, struct UserInfo us
             editCart(cart, cartCount);
             break;
         case 7:
-            checkoutMenu(cart, cartCount, items, itemCount, users, userCount);
+            checkoutMenu(cart, cartCount, items, itemCount, users, userCount, userID);
             break;
         case 8:
             break;
@@ -625,7 +622,7 @@ void BuyMenu(int userID, struct Item items[], int *itemCount, struct UserInfo us
     }
 }
 
-int exitUserMenu(struct Item cart[], int *cartCount, int userID)
+int saveCart(struct Item cart[], int *cartCount, int userID)
 {
     if (*cartCount > 0)
     {

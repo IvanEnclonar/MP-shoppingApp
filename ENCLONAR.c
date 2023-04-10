@@ -124,7 +124,7 @@ int main()
                     case 3:
                         if (cartCount > 0)
                         {
-                            exitUserMenu(cart, &cartCount, userID);
+                            saveCart(cart, &cartCount, userID);
                         }
                         break;
                     default:
