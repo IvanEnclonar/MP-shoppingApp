@@ -46,6 +46,48 @@ int getUniqueSellers(struct Item items[], int itemCount, int uniqueSellers[])
 }
 
 /**
+ * @brief Retrieves the unique seller IDs from a given array of items.
+ * @param items An array of Item structures.
+ * @param itemCount The number of items in the array.
+ * @param uniqueSellers An array to store unique seller IDs.
+ * @return The number of unique sellers found in the items array.
+ */
+int compareCart(struct Item cart[], int *cartCount, struct Item items[], int *itemCount)
+{
+    int changes = 0;
+    for (int j = 0; j < *cartCount; j++)
+    {
+        for (int i = 0; i < *itemCount; i++)
+        {
+            if (cart[j].productID == items[i].productID)
+            {
+                if (cart[j].quantityAvailable > items[i].quantityAvailable)
+                {
+                    if (changes == 0)
+                    {
+                        printf("\nWarning! The following changes have been made to the identified items:\n");
+                    }
+                    printf("Quantity of %s has changed to %d\n", cart[j].itemName, items[i].quantityAvailable);
+                    cart[j].quantityAvailable = items[i].quantityAvailable;
+                    changes = 1;
+                }
+                if (cart[j].unitPrice != items[i].unitPrice)
+                {
+                    if (changes == 0)
+                    {
+                        printf("\nWarning! The following changes have been made to the identified items:\n");
+                    }
+                    printf("Price of %s has changed from %.2f to %.2f\n", cart[j].itemName, cart[j].unitPrice, items[i].unitPrice);
+                    cart[j].unitPrice = items[i].unitPrice;
+                    changes = 1;
+                }
+            }
+        }
+    }
+    return changes;
+}
+
+/**
  * @brief Displays items from an array of items grouped by unique sellers.
  * @param items An array of Item structures.
  * @param itemCount A pointer to the number of items in the array.
@@ -375,7 +417,9 @@ void checkOutByProduct(struct Item cart[], int *cartCount, int productID, struct
         if (cart[i].productID == productID)
         {
             if (totalItems == 0)
+            {
                 printf("\nProduct ID\tItem Name\t\tQuantity\tUnit Price\tTotal Price\n");
+            }
             printf("%10d\t%-20s\t%8d\t%10.2f\t%11.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
             total = total + (cart[i].quantityAvailable * cart[i].unitPrice);
             filerteredCart[totalItems] = cart[i];
@@ -441,7 +485,9 @@ void checkOutBySeller(struct Item cart[], int *cartCount, int sellerID, struct I
         if (cart[i].sellerID == sellerID)
         {
             if (found == 0)
+            {
                 printf("\nProduct ID\tItem Name\t\tQuantity\tUnit Price\tTotal Price\n");
+            }
             printf("%10d\t%-20s\t%8d\t%10.2f\t%11.2f\n", cart[i].productID, cart[i].itemName, cart[i].quantityAvailable, cart[i].unitPrice, cart[i].quantityAvailable * cart[i].unitPrice);
             total = total + (cart[i].quantityAvailable * cart[i].unitPrice);
             found = 1;
@@ -658,6 +704,8 @@ void checkoutMenu(struct Item cart[], int *cartCount, struct Item items[], int *
         int choice;
         printf("Enter date (dd/mm/yyyy): ");
         scanf("%d/%d/%d", &date.day, &date.month, &date.year);
+
+        compareCart(cart, cartCount, items, itemCount);
 
         printf("\n[1] Checkout All Items\n");
         printf("[2] Checkout Items by a Specific Seller\n");
